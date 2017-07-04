@@ -2,3 +2,6 @@
 setup.cfg
 setup.py
 bitcoin/__init__.py
+bitcoin/interfaces.py
+bitcoin/nets.py
+bitcoin/units.py
