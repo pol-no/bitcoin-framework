@@ -79,11 +79,7 @@ class BasicTx(Serializable):
         self._inputs = inputs if inputs is not None else []
         for tx_in in self._inputs:
             tx_in.tx = self
-            tx_in.script.parent = tx_in
         self._outputs = outputs if outputs is not None else []
-        for tx_out in self._outputs:
-            tx_out.tx = self
-            tx_out.script.parent = tx_out
         self._locktime = U4BLEInt(locktime)
 
     def serialize(self):
@@ -167,7 +163,6 @@ class BasicTx(Serializable):
         """
         self._inputs.append(tx_input)
         tx_input.tx = self
-        tx_input.script.parent = tx_input
 
     def add_output(self, tx_output):
         """

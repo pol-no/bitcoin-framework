@@ -6,6 +6,7 @@ Models what every input or output in a transaction has to have (a script)
 from ..interfaces import Serializable
 from ..script import TxInputOutputScript
 
+
 class TxInputOutput(Serializable):
     """
     Defines what every input and output must contain and implement
@@ -73,6 +74,7 @@ class TxInputOutput(Serializable):
         self._script = new_script
         # Remove itself from previous script
         if old_script is not None \
+           and isinstance(old_script, TxInputOutputScript) \
            and old_script.parent == self:
             old_script.parent = None
         # Add itself to new script

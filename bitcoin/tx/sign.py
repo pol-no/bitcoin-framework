@@ -80,7 +80,8 @@ class SignableTx(BasicTx):
         signable_tx = copy.deepcopy(self)
         # Empty all scripts
         for tx_in in signable_tx.inputs:
-            tx_in.script = script.sig.ScriptSig()
+            tx_in.script.input = tx_in
+            tx_in.script = script.ScriptSig()
         # Assign the pubkey script to the input script
         signable_tx.inputs[input_num].script = script_pubkey
         # Apply hashtype

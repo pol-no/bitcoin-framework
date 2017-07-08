@@ -22,16 +22,15 @@ class MultiSig(RedeemScript):
             if neither keys needed are specified or total keys, an error will
             be triggered
     """
-    __slots__ = ["_keys_needed", "_keys_total", "_public_keys", "_suffix"]
+    __slots__ = ["_keys_needed", "_keys_total", "_public_keys"]
 
-    def __init__(self, needed=None, total=None, suffix=None):
+    def __init__(self, needed=None, total=None):
         super().__init__(None)
         assert needed is not None or total is not None, "You must specify " + \
             "at least the needed keys or the total keys"
         self._keys_needed = needed
         self._keys_total = total if total is not None else needed
         self._public_keys = []
-        self._suffix = suffix
 
     def add_public_key(self, public_key):
         """
@@ -54,7 +53,7 @@ class MultiSig(RedeemScript):
         assert public_key in self._public_keys, "Pubkey not in list"
         self._public_keys.remove(public_key)
 
-    def _build(self, prepend=None):
+    def _build(self):
         """
         Creates the script with the opcodes and the data necessary:
             OP_M <pk_n> .. <pk_1> OP_N OP_CMS
@@ -74,9 +73,6 @@ class MultiSig(RedeemScript):
         self._data.append(get_op_code_n(self._keys_total))
         # Checkmultisig
         self._data.append(OP_CMS)
-        # Append suffix if necessary
-        if self._suffix is not None:
-            self._data.append(self._suffix)
 
     @property
     def pay_script(self):

@@ -36,5 +36,5 @@ __all__ = ["U2BLEInt", "U4BLEInt", "U8BLEInt", "S4BLEInt", "VarInt",
            "OP_DROP", "OP_DUP", "OP_OVER", "OP_EQUAL", "OP_EV",
            "OP_EQUALVERIFY", "OP_HASH160", "OP_CODESEPARATOR", "OP_CS",
            "OP_CHECKSIG", "OP_CMS", "OP_CHECKMULTISIG", "OP_CLTV",
-           "OP_CHECKLOCKTIMEVERIFY", "get_op_code_n", "ScriptData",
-           "ScriptNum", "Opcode"]
+           "OP_CHECKLOCKTIMEVERIFY", "Opcode", "get_op_code_n", "ScriptData",
+           "ScriptNum"]
