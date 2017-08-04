@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Defines functional models as interfaces to specify the functionality most
-classes must provide in order to fulfill the puzzle-friendliness
+classes must provide in order to fulfill the puzzle-friendliness.
 """
 # Libraries
 # # Built-in
@@ -17,7 +17,7 @@ class Serializable(object):
     a new object of the class from an array of bytes.
 
     Those arrays of bytes will always have to be compatible with the bytes
-    specified in the Bitcoin protocol
+    specified in the Bitcoin protocol.
 
     When we say an array of bytes we mean an instance of Python 3 `bytes`
     object
@@ -29,13 +29,26 @@ class Serializable(object):
         """
         Serializes the contents of the current class into an array of bytes so
         the object can be represented as an array of bytes compatible with what
-        the Bitcoin protocol specifies
+        the Bitcoin protocol specifies.
 
         Returns:
             bytes: data of the class serialized in a bytes object
         """
         raise NotImplementedError("""Class should have implemented this, but"""
                                   """ developers of the app aren't so fast""")
+
+    def hex(self):
+        """
+        Serializes the contents into an array of bytes and returns its
+        hexadecimal string representation.
+
+        Default implementation is to serialize and then transform the bytes
+        into an hex string.
+
+        Returns:
+            str: hex representation of the serialized contents
+        """
+        return self.serialize().hex()
 
     @classmethod
     def deserialize(cls, data):
