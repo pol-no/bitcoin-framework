@@ -1,6 +1,7 @@
 """
 Defines the prefixes available for addresses in the Bitcoin cryptocurrency
-according if they belong to the testnet or to the mainnet
+depending on their belonging to the testnet or to the mainnet and type of
+address.
 
 Prefixes extracted from:
     https://en.bitcoin.it/wiki/List_of_address_prefixes
@@ -13,7 +14,7 @@ from .types import Types
 
 class Prefixes(object):
     """
-    Defines what prefixes every network must define to use for their addresses
+    Defines what prefixes every network must define to use for their addresses.
 
     All prefixes must be bytes objects
 
@@ -24,8 +25,7 @@ class Prefixes(object):
         bip32_pubkey (bytes): prefix for BIP32 public keys
         bip32_pkey (bytes): prefix for BIP32 private keys
     """
-    __slots__ = ["_p2pkh", "_p2sh", "_wif", "_bip32_pubkey",
-                 "_bip32_pkey"]
+    __slots__ = ["_p2pkh", "_p2sh", "_wif", "_bip32_pubkey", "_bip32_pkey"]
 
     def __init__(self):
         """
@@ -40,9 +40,8 @@ class Prefixes(object):
     @classmethod
     def _check_type(cls, address, prefix):
         """
-        Given an address and a list of prefixes, check if the address starts
-        with the prefix and returns true if it's the case or false
-        if not
+        Given an address and a list of prefixes, checks if the address starts
+        with the prefix and returns true if it's the case.
 
         Args:
             address (bytes): address as a bytes object
@@ -55,13 +54,14 @@ class Prefixes(object):
 
     def get_type(self, address):
         """
-        Given an address, looks in all prefixes and returns the type of address
+        Given an address, compares all prefixes and returns the type of
+        address.
 
         Args:
             address (bytes): address as a bytes object
 
         Returns:
-            Types.
+            Types: enum value determining the address type
         """
         # Check all types
         if self._check_type(address, self._p2pkh):
@@ -79,27 +79,27 @@ class Prefixes(object):
 
     @property
     def p2pkh(self):
-        """ Returns the p2pkh attribute """
+        """ Returns the P2PKH prefix value """
         return self._p2pkh
 
     @property
     def p2sh(self):
-        """ Returns the p2sh attribute """
+        """ Returns the P2SH prefix value """
         return self._p2sh
 
     @property
     def wif(self):
-        """ Returns the wif attribute """
+        """ Returns the WIF prefix value """
         return self._wif
 
     @property
     def bip32_pubkey(self):
-        """ Returns the bip32_pubkey attribute """
+        """ Returns the BIP32_pubkey prefix value """
         return self._bip32_pubkey
 
     @property
     def bip32_pkey(self):
-        """ Returns the bip32_pkey attribute """
+        """ Returns the BIP32_pkey prefix value """
         return self._bip32_pkey
 
     @property
@@ -111,12 +111,12 @@ class Prefixes(object):
 
 class MainNetPrefixes(Prefixes):
     """
-    Defines the mainNet prefixes for Bitcoin addresses
+    Defines the mainNet prefixes for Bitcoin addresses.
     """
 
     def __init__(self):
         """
-        Initializes the class with the values of the mainNet prefixes
+        Initializes the class with the values of the mainNet prefixes.
         """
         super().__init__()
         self._p2pkh = b'\x00'
@@ -128,12 +128,12 @@ class MainNetPrefixes(Prefixes):
 
 class TestNetPrefixes(Prefixes):
     """
-    Defines the testNet prefixes for Bitcoin addresses
+    Defines the testNet prefixes for Bitcoin addresses.
     """
 
     def __init__(self):
         """
-        Initializes the class with the values of the testNet prefixes
+        Initializes the class with the values of the testNet prefixes.
         """
         super().__init__()
         self._p2pkh = b'\x6F'
@@ -157,7 +157,7 @@ PREFIXES_BY_NETWORK = {
 def get(network, address_type):
     """
     Given the network and the type of address, returns the prefix to use for
-    the address
+    the address.
 
     Args:
         network (Network): network for the address
@@ -169,8 +169,8 @@ def get(network, address_type):
     Raises:
         AttributeError: if address type is invalid
     """
-    assert PREFIXES_BY_NETWORK.get(network) is not None, """No addresses
-    available for that network"""
+    assert PREFIXES_BY_NETWORK.get(network) is not None,
+        "No addresses available for that network"
     return getattr(PREFIXES_BY_NETWORK[network], address_type)
 
 
@@ -181,7 +181,7 @@ def guess(address):
 
     Args:
         address (bytes): address as bytes object to guess its prefix, and
-        thefore its type and network
+        therefore its type and network
 
     Returns:
         tuple: containing the network and type or None if prefix couldn't be

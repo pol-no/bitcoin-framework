@@ -1,13 +1,10 @@
 """
-Defines basic data-structures for Bitcoin in Python, hard-coded parameters in
-order to fill those data-structures and methods to serialize and deserialize
-all of them in order to create valid data for the Bitcoin cryptocurrency
-protocol
-
 The aim of this module is to provide a puzzle-friendly framework to compose
-easily any Bitcoin transaction, specially tohse containing smart contracts
+easily any Bitcoin transaction, specially those containing smart contracts
 """
 # Libraries
+import pkgutil
+__path__ = pkgutil.extend_path(__path__, __name__)
 # # Parameters
 from .nets import Network, DEFAULT_NETWORK
 from .units import BTC_PER_SATOSHI, btc_to_satoshi, satoshi_to_btc

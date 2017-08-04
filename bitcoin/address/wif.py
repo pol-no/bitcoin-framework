@@ -1,6 +1,6 @@
 """
 Models a WIF (Wallet Import Format) address type, that contains a compressed /
-uncompressed private ECDSA key
+uncompressed private ECDSA key.
 
 Information extracted from:
 https://en.bitcoin.it/wiki/Wallet_import_format
@@ -50,22 +50,22 @@ class WIF(Address):
     """
     WIF address address. Allows to serialize, deserialize, encode
     and decode WIF addresses to obtain and set ECDSA private keys in a portable
-    format
+    format.
 
-    Internal _value field contains the private key and checksum
+    Internal _value field contains the private key and checksum.
     """
     def __init__(self, private_key, addr_net=DEFAULT_NETWORK):
         """
         Initializes a WIF address given the address network and the private
-        key as a bytes object
+        key as a bytes object.
 
         Args:
             addr_net (Network): network the address operates in
             private_key (bytes): private ECDSA key as bytes object
         """
         # Assert types
-        assert isinstance(private_key, bytes), """Private key must be a bytes
-        object"""
+        assert isinstance(private_key, bytes),
+            "Private key must be a bytes object"
         # Initialize super classes
         super().__init__(Types.wif, addr_net)
         # Assign value
@@ -76,20 +76,20 @@ class WIF(Address):
     def deserialize(cls, address):
         """
         Deserializes the given address as an array of bytes, guessing its
-        prefix and saving its info, checking that the prefix type is WIF and
-        after that, setting the ECDSA private key value
+        prefix and saving its info. Checks that the prefix type is WIF and
+        after that, sets the ECDSA private key value.
 
         Args:
             address (bytes): bytes object containing an address to deserialize
 
         Returns:
-            self: the object with the updated values
+            self: a new object containing the retrieved information
         """
         # Basic deserialization
         addr_obj = Address.deserialize(address)
         # Type check
-        assert addr_obj.type == Types.wif, """The deserialized address is not
-        a WIF address"""
+        assert addr_obj.type == Types.wif,
+            "The deserialized address is not a WIF address"
         # Validate private key
         private_key = addr_obj._value[:-CHECKSUM_SIZE]
         validate_private_key(private_key)
@@ -99,7 +99,7 @@ class WIF(Address):
     @property
     def private_key(self):
         """
-        Extracts the private key from the address
+        Extracts the private key from the address.
 
         Source:
         https://github.com/vbuterin/pybitcointools/blob/master/bitcoin/main.py
@@ -111,15 +111,30 @@ class WIF(Address):
 
     @property
     def public_key(self):
-        """ Extracts the public key from the private key contents """
+        """
+        Extracts the public key from the private key contents.
+
+        Returns:
+            bytes: public key derived from WIF address private key
+        """
         return private_to_public(self.private_key)
 
     @property
     def compressed(self):
-        """ Calculates if the address is compressed or not """
+        """
+        Calculates if the address is compressed or not.
+
+        Returns:
+            bool: true if WIF address is compressed
+        """
         return len(self._value[:-CHECKSUM_SIZE]) == WIF_COMPRESSED_SIZE
 
     @property
     def checksum(self):
-        """ Returns the address checksum """
+        """
+        Returns the address checksum.
+
+        Returns:
+            bytes: 4-byte checksum of the address
+        """
         return self.value[-CHECKSUM_SIZE:]

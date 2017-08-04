@@ -1,10 +1,10 @@
 """
-Models a Bitcoin address and provides methods to check its type and generate
-them given the type and value
+Models a generic Bitcoin address and provides methods to check its type and
+generate them given the type and value.
 
 A Bitcoin address is not just the public key hash to pay in a P2PKH script, it
 also can contain a private key, a public key, or a script hash for their use
-in P2SH pubkey scripts
+in P2SH pubkey scripts.
 
 Information about addresses can be found here:
 https://en.bitcoin.it/wiki/Address
@@ -21,9 +21,9 @@ from . import prefix
 
 class Address(Field, Base58Encodable):
     """
-    The address class allows to deserialize and serialize addresses from and
+    The `Address` class allows to deserialize and serialize addresses from and
     to an array of bytes, obtaining basic data about them like the address
-    prefix, and therefore, the address type and network
+    prefix, and therefore, the address type and network.
 
     Value property saved is the data the address contains, that depending on
     the address type has different meanings. Value is the address without the
@@ -41,13 +41,13 @@ class Address(Field, Base58Encodable):
                  addr_net=Network.unknown, addr_prefix=None, value=None):
         """
         Initializes an empty address given the type of address and network they
-        belong to or the prefix of the address
+        belong to or the prefix of the address.
 
         Either a valid address type and network must be provided or just the
         prefix so the network and type are guessed automatically. If not, an
-        exception will be raised
+        exception will be raised.
 
-        If given all arguments, just network and type will be used
+        If given all arguments, just network and type will be used.
 
         Args:
             addr_type (address.Types): type of the address
@@ -56,18 +56,18 @@ class Address(Field, Base58Encodable):
             value (bytes): value of the address as a bytes object
 
         Raises:
-            ValuError: if no type / network combination or prefix has been
+            ValueError: if no type / network combination or prefix has been
                        specified
         """
         # Assert types
-        assert isinstance(addr_type, Types), """Type must be an address.Types
-        enum value"""
-        assert isinstance(addr_net, Network), """Network must be a
-        bitcoin.Network enum value"""
-        assert isinstance(addr_prefix, bytes) or addr_prefix is None, """Prefix
-        must be a bytes object"""
-        assert isinstance(value, bytes) or value is None, """Value must be
-        either None or a bytes object"""
+        assert isinstance(addr_type, Types), "Type argument must be an " + \
+            "address.Types' enum value"
+        assert isinstance(addr_net, Network), "Network argument must be a " + \
+            "bitcoin.Network's enum value"
+        assert isinstance(addr_prefix, bytes) or addr_prefix is None,
+            "Prefix argument must be a bytes object"
+        assert isinstance(value, bytes) or value is None,
+            "Value must be either None or a bytes object"
         # Check pairs
         if addr_type != Types.unknown and addr_net != Network.unknown:
             # Got a type / network pair
@@ -79,9 +79,10 @@ class Address(Field, Base58Encodable):
                 addr_prefix.hex())
             addr_net, addr_type = guess_info
         else:
-            raise ValueError("""You must specify either a valid network and
-            type of address combination or a prefix as a bytes object to build
-            an address""")
+            raise ValueError(
+                "You must specify either a valid network and type of " + \
+                "address combination or a prefix as a bytes object " + \
+                "to build an address")
         # Assign values
         self._value = value if value is not None else bytes()
         self._net = addr_net
@@ -90,16 +91,19 @@ class Address(Field, Base58Encodable):
 
     def serialize(self):
         """
-        Returns the address as an array of bytes by composing the value and
-        the prefix
+        Returns the address as an array of bytes by composing the prefix and
+        the value.
+
+        Returns:
+            bytes: serialized address
         """
         return self.prefix + self.value
 
     @classmethod
     def deserialize(cls, address):
         """
-        Given an address an array of bytes, try to guess information from the
-        address (type of address, network and prefix) by looking into the
+        Given an address as an array of bytes, try to guess information from
+        the address (type of address, network and prefix) by looking into the
         defined prefixes. After that, saves the address value and guessed
         information into a new object.
 
@@ -107,40 +111,66 @@ class Address(Field, Base58Encodable):
             address (bytes): bytes object containing an address to deserialize
 
         Returns:
-            self: the object with the updated values
+            cls: the object with the updated values
         """
         guess_info = prefix.guess(address)
         # Validate given information
-        assert guess_info is not None, """The address (%s) is not valid, no
-        valid prefix has been found""" % (address.hex())
+        assert guess_info is not None, "The address (%s) is not valid, no " + \
+            "valid prefix has been found" % (address.hex())
         addr_net, addr_type = guess_info
         # Get prefix
         addr_prefix = prefix.get(addr_net, addr_type.name)
         # Get value
         value = address[len(addr_prefix):]
+        # Build object
         return cls(addr_prefix=addr_prefix, value=value)
 
     @property
     def network(self):
-        """ Returns the network the address belongs to """
+        """
+        Returns the network the address belongs to.
+
+        Returns:
+            nets.Network: enum value representing the network
+        """
         return self._net
 
     @property
     def type(self):
-        """ Returns the type of the address """
+        """
+        Returns the type of the address.
+
+        Returns:
+            address.types.Type: enum value representing the type
+        """
         return self._type
 
     @property
     def prefix(self):
-        """ Returns the bytes prefix of the address """
+        """
+        Returns the address prefix.
+
+        Returns:
+            bytes: address prefix
+        """
         return self._prefix
 
     @property
     def value(self):
-        """ Returns the address data """
+        """
+        Returns the address data.
+
+        Returns:
+            bytes: address value
+        """
         return self._value
 
     def __str__(self):
-        """ Returns the field as a printable string """
+        """
+        Returns the field as a printable string.
+
+        Returns:
+            str: human readable representation of the address
+        """
         return "<%s:%s(net=%s)>" % (
             self.encode(), self.__class__.__name__, self._net)

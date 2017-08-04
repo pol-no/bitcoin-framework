@@ -1,5 +1,5 @@
 """
-Defines the existing address types
+Defines the existing address types.
 """
 # Libraries
 # # Built-in
@@ -9,7 +9,7 @@ from enum import Enum, unique
 @unique
 class Types(Enum):
     """
-    Defines the types a Bitcoin address can be
+    Defines the types a Bitcoin address can be.
     """
     unknown = -1
     p2pkh = 1

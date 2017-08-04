@@ -1,6 +1,7 @@
 """
 Defines a class to model a P2SH address, this means, adding extra methods to
-set the reedem script and generate the address automatically
+validate the checksum when deserializing or decoding. Also has methods to get
+and set the redeem script hash from the address.
 
 Information extracted from:
 http://www.soroushjp.com/2014/12/20/bitcoin-multisig-the-hard-way-understanding-raw-multisignature-bitcoin-transactions/
@@ -36,9 +37,9 @@ CHECKSUM_SIZE = 4
 # Classes
 class P2SH(Address):
     """
-    Pay to script hash address. Allows to serialize, deserialize, encode
+    Pay-to-script-hash address. Allows to serialize, deserialize, encode
     and decode P2SH addresses so the reedem script hash can be easily set and
-    got (its hash) to generate / decode easily P2SH addresses
+    retrieved to easily handle P2SH addresses.
 
     Internal _value field is contains the hash of the reedem script itself
     """
@@ -60,23 +61,24 @@ class P2SH(Address):
         """
         # Type assertions
         assert isinstance(redeem_script, RedeemScript) \
-            or redeem_script is None, """Redeem script must be a RedeemScript
-            object"""
+            or redeem_script is None, "Redeem script must be a " + \
+                "RedeemScript object"
         assert isinstance(redeem_script_hash, bytes) \
-            or redeem_script_hash is None, """Redeem script hash must be a bytes
-            object"""
+            or redeem_script_hash is None, "Redeem script hash must be a " +  \
+                "bytes object"
         assert redeem_script is not None or redeem_script_hash is not None, \
-            """You must specify either a redeem script or a redeem script hash
-            to create a P2SH address"""
+                "You must specify either a redeem script or a redeem " + \
+                "script hash to create a P2SH address"
 
         # Initialize super
         super().__init__(Types.p2sh, addr_net)
 
         # Set value
         if redeem_script_hash is not None:
-            assert len(redeem_script_hash) == SH_SIZE, """Unable to set a
-            reedem script hash with length %d bytes. Script hash has to be %d
-            bytes""" % (len(redeem_script_hash), SH_SIZE)
+            assert len(redeem_script_hash) == SH_SIZE,
+                "Unable to set a reedem script hash with length %d bytes. " + \
+                "Script hash has to be %d bytes as it's generated with " + \
+                "RIPEMD-160 hash fucntion" % (len(redeem_script_hash), SH_SIZE)
             self._value = redeem_script_hash
         else:
             self._value = redeem_script.hash
@@ -88,39 +90,54 @@ class P2SH(Address):
         """
         Deserializes the given address as an array of bytes, guessing its
         prefix and saving its info, checking that the prefix type is P2SH and
-        after that, setting the script hash value
+        after that, setting the redeem script hash value.
 
         Args:
             address (bytes): bytes object containing an address to deserialize
 
         Returns:
-            self: the object with the updated values
+            self: a new object containing the retrieved information
         """
         # Check size
-        assert len(address) == ADDRESS_SIZE, """P2SH Address %s size in bytes
-        is not valid. All P2SH addresses have %d bytes""" % (
-            address.hex(), ADDRESS_SIZE)
+        assert len(address) == ADDRESS_SIZE,
+            "P2SH Address %s size in bytes is not valid. All P2SH " + \
+            "addresses have %d bytes" % (address.hex(), ADDRESS_SIZE)
         # Basic deserialization
         addr_obj = Address.deserialize(address)
         # Check type
-        assert addr_obj.type == Types.p2sh, """The deserialized address is not
-        a P2SH address"""
+        assert addr_obj.type == Types.p2sh,
+            "The deserialized address is not a P2SH address"
         # Return object
         return cls(addr_net=addr_obj.network,
                    redeem_script_hash=addr_obj.value)
 
     @property
     def checksum(self):
-        """ Returns the p2sh address checksum """
+        """
+        Returns the P2SH address checksum.
+
+        Returns:
+            bytes: the P2SH 4-byte address checksum
+        """
         return self._value[-CHECKSUM_SIZE:]
 
     @property
     def script_hash(self):
-        """ Extracts the script hash from the address, it's the same as the
-        address value """
+        """
+        Extracts the script hash from the address
+
+        Returns:
+            bytes: redeem script hash of the address
+        """
         return self._value[:-CHECKSUM_SIZE]
 
     @property
     def script(self):
-        """ Returns a P2SH scriptpubkey that pays to this P2SH address """
+        """
+        Returns a P2SH scriptPubkey that pays to this P2SH address
+
+        Returns:
+            script.pubkey.P2SH: P2SH scriptPubkey that pays to this
+                                redeem script hash
+        """
         return pubkey.P2SH(self)
