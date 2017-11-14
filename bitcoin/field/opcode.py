@@ -174,7 +174,7 @@ OP_CODESEPARATOR = type('OP_CODESEPARATOR', (Opcode,), {
     "name": "OP_CODESEPARATOR",
     "description": """All of the signature checking words will only match
     signatures to the data after the most recently-executed OP_CODESEPARATOR"""
-})(169)
+})(171)
 
 OP_CS = OP_CHECKSIG = type('OP_CHECKSIG', (Opcode,), {
     "name": "OP_CHECKSIG",
